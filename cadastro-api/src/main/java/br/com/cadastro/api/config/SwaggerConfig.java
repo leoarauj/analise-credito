@@ -1,16 +1,12 @@
 package br.com.cadastro.api.config;
 
-import static springfox.documentation.builders.PathSelectors.regex;
-
-import java.util.ArrayList;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
-import springfox.documentation.service.VendorExtension;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -22,29 +18,26 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
+	private final String basePackage = "${basePackage}";
 
 	@Bean
-    public Docket productApi() {
+    public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("br.com.cadastro.api"))
-                .paths(regex("/.*"))
+                .apis(RequestHandlerSelectors.basePackage(this.basePackage))
+//                .paths(regex("/.*"))
                 .build()
-                .apiInfo(metaInfo());
+                .apiInfo(metaData());
     }
 
-    private ApiInfo metaInfo() {
-        ApiInfo apiInfo = new ApiInfo(
-                "API REST",
-                "API REST",
-                "1.0",
-                "Terms of Service",
-                new Contact("Leonardo Silva Araújo", "no url",
-                        "leo.arauj@outlook.com"),
-                "Apache License Version 2.0",
-                "https://www.apache.org/licesen.html", new ArrayList<VendorExtension>()
-        );
-
-        return apiInfo;
-    }
+	public ApiInfo metaData() {
+		return new ApiInfoBuilder()
+				.title("Cadastro - API")
+				.description("API para cadastro de clientes e análise de crédito")
+				.version("1.0")
+				.contact(new Contact("Leonardo Araújo", "https://github.com/leoarauj", "leo.arauj@outlook.com"))
+				.license("Apache License Version 2.0")
+				.licenseUrl("https://www.apache.org/licesen.html")
+				.build();
+	}
 }
