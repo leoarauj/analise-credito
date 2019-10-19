@@ -1,7 +1,5 @@
 package br.com.cadastro.api.dto;
 
-import java.math.BigDecimal;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -26,6 +24,6 @@ public @Data class ClienteDTO {
 	private Long idEstadoCivil;
 	private String uf;
 	private Integer dependentes;
-	private BigDecimal renda;
+	private Double renda;
 
 }
