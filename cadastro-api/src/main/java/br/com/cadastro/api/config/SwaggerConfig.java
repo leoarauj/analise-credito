@@ -18,7 +18,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
-	private final String basePackage = "${basePackage}";
+	private final String basePackage = "br.com.cadastro.api";
 
 	@Bean
     public Docket api() {
