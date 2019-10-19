@@ -12,5 +12,18 @@ import br.com.cadastro.api.model.Cliente;
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, Long>{
 
+	/**
+	 * Busca {@link Cliente} por atributo CPF
+	 * @param cpf
+	 * @return
+	 */
 	Cliente findByCpf(final String cpf);
+
+	/**
+	 * Realiza a contagem de CPF's repetidos para validação de duplicidade
+	 * 
+	 * @param cpf
+	 * @return
+	 */
+	Long countByCpf(final String cpf);
 }
