@@ -48,6 +48,7 @@ public class ClienteService {
 				|| Objects.isNull(cliente.getEstadoCivil())
 				|| Objects.isNull(cliente.getDependentes())
 				|| Objects.isNull(cliente.getRenda())
+				|| Objects.isNull(cliente.getIdade())
 				|| StringUtils.isEmpty(cliente.getNome())
 				|| StringUtils.isEmpty(cliente.getCpf())
 				|| StringUtils.isEmpty(cliente.getUf())) {

@@ -1,7 +1,6 @@
 package br.com.cadastro.api.model;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -76,6 +75,6 @@ public @Data class Cliente implements Serializable {
 	@NotNull
 	@Min(value = 0)
 	@Column(name = "RENDA", scale = 2, precision = 2, nullable = false)
-	private BigDecimal renda;
+	private Double renda;
 
 }
