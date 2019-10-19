@@ -12,7 +12,7 @@ import br.com.cadastro.api.exception.RestMessageCode;
 import br.com.cadastro.api.exception.RestResponseMessageException;
 import br.com.cadastro.api.model.Cliente;
 import br.com.cadastro.api.repository.ClienteRepository;
-import br.com.cadastro.api.utils.CpfUltil;
+import br.com.cadastro.api.utils.CpfUtil;
 import ch.qos.logback.core.net.server.Client;
 
 /**
@@ -36,7 +36,9 @@ public class ClienteService {
 	public Cliente salvar(final Cliente cliente) {
 		validarCamposObrigatorios(cliente);
 		validarCpf(cliente.getCpf());
-		formatarCpf(cliente);
+
+		String cpfFormatado = formatarCpf(cliente.getCpf());
+		cliente.setCpf(cpfFormatado);
 
 		if(Objects.isNull(cliente.getId())) {
 			validarDuplicidadeCpf(cliente.getCpf());
@@ -52,11 +54,10 @@ public class ClienteService {
 	 * @return
 	 */
 	public Cliente buscarPorCpf(final String cpf) {
-		if(StringUtils.isEmpty(cpf)) {
-			throw new RestResponseMessageException(RestMessageCode.CAMPOS_OBRIGATORIOS_NAO_INFORMADOS);
-		}
+		validarCpf(cpf);
+		String cpfFormatado = formatarCpf(cpf);
 
-		return clienteRepository.findByCpf(cpf);
+		return clienteRepository.findByCpf(cpfFormatado);
 	}
 
 	/**
@@ -64,7 +65,11 @@ public class ClienteService {
 	 * @param cpf
 	 */
 	private void validarCpf(final String cpf) {
-		if(!CpfUltil.isValid(cpf)) {
+		if(StringUtils.isEmpty(cpf)) {
+			throw new RestResponseMessageException(RestMessageCode.CAMPOS_OBRIGATORIOS_NAO_INFORMADOS);
+		}
+
+		if(!CpfUtil.isValid(cpf)) {
 			throw new RestResponseMessageException(RestMessageCode.CPF_INVALIDO);
 		}
 	}
@@ -87,9 +92,8 @@ public class ClienteService {
 	 * @param cpf
 	 * @return
 	 */
-	private void formatarCpf(final Cliente cliente) {
-		String cpfFormatado = CpfUltil.formatarCpf(cliente.getCpf());
-		cliente.setCpf(cpfFormatado);
+	private String formatarCpf(final String cpf) {
+		return CpfUtil.formatarCpf(cpf);
 	}
 
 	/**

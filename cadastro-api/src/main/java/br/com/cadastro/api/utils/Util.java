@@ -9,7 +9,7 @@ import javax.swing.text.MaskFormatter;
  * 
  * @author Leonardo Araújo
  */
-public class Util {
+public abstract class Util {
 
 	/**
 	 * Retorna o valor formatado com a máscara informada

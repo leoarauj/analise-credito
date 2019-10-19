@@ -7,7 +7,7 @@ import java.util.InputMismatchException;
  * 
  * @author Leonardo Araújo
  */
-public class CpfUltil {
+public abstract class CpfUtil {
 
 	private static final String mascaraCpf = "###.###.###-##";
 
@@ -26,8 +26,18 @@ public class CpfUltil {
 	 * @return
 	 */
 	public static String formatarCpf(final String cpf) {
-		String cpfSemMascara = cpf.replaceAll("[^0-9]", "");
+		String cpfSemMascara = limparFormatacaoCpf(cpf);
 		return Util.formatarString(cpfSemMascara, mascaraCpf);
+	}
+
+	/**
+	 * Limpa a formatação de dígitos não numéricos
+	 * 
+	 * @param cpf
+	 * @return
+	 */
+	private static String limparFormatacaoCpf(final String cpf) {
+		return cpf.replaceAll("[^0-9]", "");
 	}
 
 	/**
@@ -39,7 +49,7 @@ public class CpfUltil {
 	 * @return boolean
 	 */
 	public static boolean isValid(final String cpf) {
-		String cpfSemMascara = cpf.replaceAll("[^0-9]", "");
+		String cpfSemMascara = limparFormatacaoCpf(cpf);
 
         /*
          * considera-se erro CPF's formados por uma sequencia de numeros iguais
