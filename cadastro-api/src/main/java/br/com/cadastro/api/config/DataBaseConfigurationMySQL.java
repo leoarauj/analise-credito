@@ -23,7 +23,7 @@ public class DataBaseConfigurationMySQL {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://localhost:3306/cadastro?serverTimezone=UTC");
-//        dataSource.setUrl("jdbc:mysql://localhost:3306/analise_credito?createDatabaseIfNotExist=true");
+//        dataSource.setUrl("jdbc:mysql://localhost:3306/cadastro?createDatabaseIfNotExist=true");
         dataSource.setUsername("root");
         dataSource.setPassword("");
         return dataSource;
