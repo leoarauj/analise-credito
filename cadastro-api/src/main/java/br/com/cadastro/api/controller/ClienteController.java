@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.com.cadastro.api.dto.ClienteDTO;
+import br.com.cadastro.api.enuns.EstadoCivil;
+import br.com.cadastro.api.enuns.Sexo;
 import br.com.cadastro.api.mapper.ClienteMapper;
 import br.com.cadastro.api.model.Cliente;
 import br.com.cadastro.api.response.RestResponse;
@@ -30,7 +32,7 @@ public class ClienteController {
 
 	@Autowired
 	private ClienteService clienteService;
-	
+
 	@Autowired
 	private ClienteMapper clienteMapper;
 
@@ -77,6 +79,32 @@ public class ClienteController {
 		List<ClienteDTO> clientesDTO = clientes.stream().map(o -> clienteMapper.toDTO(o)).collect(Collectors.toList());
 
 		return ResponseEntity.ok(clientesDTO);
+	}
+
+	/**
+	 * Retorna uma lista de possíveis valores para {@link EstadoCivil}
+	 * @return
+	 */
+	@ApiOperation(value = "Busca todos os valores disponivéis no enum EstadoCivil")
+	@ApiResponse(code = 200, message = "Success", response = EstadoCivil.class)
+	@RequestMapping(value = "/estado-civil", method = RequestMethod.GET)
+	public ResponseEntity<?> retornarValoresEstadoCivil() {
+		List<EstadoCivil> collect = clienteService.retornarValoresEstadoCivil();
+
+		return ResponseEntity.ok(collect);
+	}
+
+	/**
+	 * Retorna uma lista de possíveis valores para {@link Sexo}
+	 * @return
+	 */
+	@ApiOperation(value = "Busca todos os valores disponivéis no enum Sexo")
+	@ApiResponse(code = 200, message = "Success", response = Sexo.class)
+	@RequestMapping(value = "/sexo", method = RequestMethod.GET)
+	public ResponseEntity<?> retornarValoresSexo() {
+		List<Sexo> collect = clienteService.retornarValoresSexo();
+
+		return ResponseEntity.ok(collect);
 	}
 
 	/**

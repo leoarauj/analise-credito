@@ -1,5 +1,6 @@
 package br.com.cadastro.api.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import br.com.cadastro.api.enuns.EstadoCivil;
+import br.com.cadastro.api.enuns.Sexo;
 import br.com.cadastro.api.exception.RestMessageCode;
 import br.com.cadastro.api.exception.RestResponseMessageException;
 import br.com.cadastro.api.model.Cliente;
@@ -67,6 +70,24 @@ public class ClienteService {
 		String cpfFormatado = formatarCpf(cpf);
 
 		return clienteRepository.findByCpf(cpfFormatado);
+	}
+
+	/**
+	 * Retorna uma lista de possíveis valores para {@link EstadoCivil}
+	 * 
+	 * @return {@link List}
+	 */
+	public List<EstadoCivil> retornarValoresEstadoCivil() {
+		return Arrays.asList(EstadoCivil.values());
+	}
+
+	/**
+	 * Retorna uma lista de possíveis valores para {@link Sexo}
+	 * 
+	 * @return {@link List}
+	 */
+	public List<Sexo> retornarValoresSexo() {
+		return Arrays.asList(Sexo.values());
 	}
 
 	/**
