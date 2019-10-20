@@ -44,7 +44,7 @@ public @Data class AnaliseCredito implements Serializable {
 	@NotNull
 	@Convert(converter = StatusAprovadoNegadoConverter.class)
 	@Column(name = "RES_ANALISE", nullable = false)
-	private StatusAprovadoNegado resultado;
+	private StatusAprovadoNegado status;
 
 	@Min(value = 0)
 	@Column(name = "LIMITE_MIN")
