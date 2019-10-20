@@ -1,6 +1,8 @@
 package br.com.cadastro.api.controller;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +57,26 @@ public class ClienteController {
 		URI location = getURI(cliente);
 
 		return ResponseEntity.created(location).build();
+	}
+
+	/**
+	 * Retorna uma lista de todos {@link ClienteDTO}
+	 * 
+	 * @return
+	 */
+	@ApiOperation(value = "Busca todos Clientes")
+	@ApiResponses({ 
+		@ApiResponse(code = 201, message = "Success", response = ClienteDTO.class),
+		@ApiResponse(code = 400, message = "Bad Request", response = RestResponse.class),
+		@ApiResponse(code = 404, message = "Nof Found", response = RestResponse.class)
+	})
+	@RequestMapping(method = RequestMethod.GET)
+	public ResponseEntity<?> buscarTodos() {
+		List<Cliente> clientes = clienteService.buscarTodos();
+
+		List<ClienteDTO> clientesDTO = clientes.stream().map(o -> clienteMapper.toDTO(o)).collect(Collectors.toList());
+
+		return ResponseEntity.ok(clientesDTO);
 	}
 
 	/**

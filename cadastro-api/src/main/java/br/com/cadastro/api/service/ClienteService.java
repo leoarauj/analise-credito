@@ -1,5 +1,6 @@
 package br.com.cadastro.api.service;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.transaction.Transactional;
@@ -21,7 +22,7 @@ import ch.qos.logback.core.net.server.Client;
  * @author Leonardo Araújo
  */
 @Service
-@Transactional
+@Transactional(rollbackOn = RestResponseMessageException.class)
 public class ClienteService {
 
 	@Autowired
@@ -48,10 +49,18 @@ public class ClienteService {
 	}
 
 	/**
+	 * Retorna uma lista de todos os {@link Cliente}
+	 * @return {@link List}
+	 */
+	public List<Cliente> buscarTodos() {
+		return clienteRepository.findAll();
+	}
+
+	/**
 	 * Busca {@link Cliente} segundo o atributo <b>CPF</b>
 	 * 
 	 * @param cpf
-	 * @return
+	 * @return {@link Cliente}
 	 */
 	public Cliente buscarPorCpf(final String cpf) {
 		validarCpf(cpf);
@@ -90,7 +99,7 @@ public class ClienteService {
 	 * <dd><i> Ex: 000.000.000-00</i></dd>
 	 * 
 	 * @param cpf
-	 * @return
+	 * @return {@link String}
 	 */
 	private String formatarCpf(final String cpf) {
 		return CpfUtil.formatarCpf(cpf);
