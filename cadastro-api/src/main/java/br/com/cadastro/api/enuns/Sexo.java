@@ -5,11 +5,14 @@ import java.util.Objects;
 
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 /**
  * Enum com possíveis valores para definição de Gênero.
  * 
  * @author Leonardo Araújo
  */
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Sexo {
 
 	MASCULINO(1L, "Masculino", "M"),

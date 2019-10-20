@@ -5,11 +5,14 @@ import java.util.Objects;
 
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 /**
  * Enum com possíveis valores para <b>Estado Civil</b>
  * 
  * @author Leonardo Araújo
  */
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum EstadoCivil {
 
 	SOLTEIRO(1L, "Solteiro"),
