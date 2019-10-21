@@ -45,7 +45,7 @@ public class ClienteController {
 	 */
 	@ApiOperation(value = "Salva Cliente")
 	@ApiResponses({ 
-		@ApiResponse(code = 201, message = "Success", response = ClienteDTO.class),
+		@ApiResponse(code = 201, message = "Success", response = URI.class),
 		@ApiResponse(code = 400, message = "Bad Request", response = RestResponse.class),
 		@ApiResponse(code = 404, message = "Nof Found", response = RestResponse.class)
 	})
