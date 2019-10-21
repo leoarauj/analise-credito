@@ -10,8 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -41,29 +39,27 @@ public @Data class AnaliseCredito implements Serializable {
 	@Column(name = "PK_ANALISE_CRED")
 	private Long id;
 
-	@NotNull
 	@Convert(converter = StatusAprovadoNegadoConverter.class)
 	@Column(name = "RES_ANALISE", nullable = false)
 	private StatusAprovadoNegado status;
 
-	@Min(value = 0)
+	@Column(name = "MOVITO_NEGADO", length = 150, nullable = true)
+	private String motivo;
+
 	@Column(name = "LIMITE_MIN")
 	private Double limiteMin;
 
-	@Min(value = 0)
 	@Column(name = "LIMITE_MAX")
 	private Double limiteMax;
 
-	@NotNull
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
 	@Column(name = "DATA_ANALISE", nullable = false)
 	private LocalDateTime dataAnalise;
 
-	@NotNull
-	@Column(name = "TOTAL_PONTOS", nullable = false)
-	private Long pontuacao;
+	@Column(name = "SCORE", nullable = false, precision = 2, scale = 2)
+	private Double score;
 
-	@NotNull
 	@Column(name = "FK_CLIENTE", nullable = false)
 	private Long idCliente;
+
 }
