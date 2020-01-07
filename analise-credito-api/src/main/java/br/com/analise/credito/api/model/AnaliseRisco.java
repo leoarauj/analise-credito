@@ -51,4 +51,10 @@ public @Data class AnaliseRisco implements Serializable {
 
 	@Column(name = "RENDA_MIN", nullable = false)
 	private Double rendaMinima;
+
+	@Column(name = "LIMITE_MIN", nullable = false)
+	private Double limiteMin;
+
+	@Column(name = "LIMITE_MAX", nullable = false)
+	private Double limiteMax;
 }

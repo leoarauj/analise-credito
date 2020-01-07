@@ -51,7 +51,7 @@ public class ClienteController {
 	})
 	@RequestMapping(produces = "application/json", method = RequestMethod.POST)
 	public ResponseEntity<?> salvar(@RequestBody final ClienteDTO clienteDTO) {
-		clienteDTO.setId(null);
+//		clienteDTO.setId(null);
 
 		Cliente cliente = clienteMapper.toEntity(clienteDTO);
 		clienteService.salvar(cliente);

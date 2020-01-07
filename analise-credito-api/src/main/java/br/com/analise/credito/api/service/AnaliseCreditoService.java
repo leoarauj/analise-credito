@@ -40,8 +40,6 @@ import br.com.analise.credito.api.repository.PesoIdadeRepository;
 @Service
 @Transactional(rollbackOn = RestResponseMessageException.class)
 public class AnaliseCreditoService {
-	private final Double limiteMin = 0.2;
-	private final Double limiteMax = 0.4;
 
 	@Autowired
 	private AnaliseCreditoRepository analiseCreditoRepository;
@@ -72,17 +70,17 @@ public class AnaliseCreditoService {
 		validarCamposObrigatorios(clienteDTO);
 
 		if(avaliarRendaMinimaCliente(clienteDTO.getRenda())) {
-			return negarPorRendaBaixa(clienteDTO);
+			return negarPorRendaBaixa(clienteDTO.getId());
 		}
 
-		if(avaliarPorIdadeMinima(clienteDTO) || avaliarPorIdadeMaxima(clienteDTO)) {
-			return negarPorAltoRisco(clienteDTO, 0.0);
+		if(avaliarPropostaPorIdade(clienteDTO.getIdade())) {
+			return negarPorAltoRisco(clienteDTO.getId(), null);
 		}
 
 		Double totalScore = calcularScoreTotal(clienteDTO)	;
 
 		if(avaliarRiscoPorScore(totalScore)) {
-			return negarPorAltoRisco(clienteDTO, totalScore);
+			return negarPorAltoRisco(clienteDTO.getId(), totalScore);
 		}
 
 		return aprovarProposta(clienteDTO, totalScore);
@@ -124,14 +122,14 @@ public class AnaliseCreditoService {
 	 * Realiza a aprovação da proposta de Crédito
 	 * 
 	 * @param clienteDTO
-	 * @param totalScore
+	 * @param score
 	 * @return
 	 */
-	private AnaliseCredito aprovarProposta(final ClienteDTO clienteDTO, final double totalScore) {
-		AnaliseCredito analiseCredito = calcularLimite(clienteDTO);
+	private AnaliseCredito aprovarProposta(final ClienteDTO clienteDTO, final double score) {
+		AnaliseCredito analiseCredito = calcularLimite(clienteDTO, score);
 
 		analiseCredito.setIdCliente(clienteDTO.getId());
-		analiseCredito.setScore(totalScore);
+		analiseCredito.setScore(score);
 		analiseCredito.setStatus(StatusAprovadoNegado.APROVADO);
 		analiseCredito.setDataAnalise(LocalDateTime.now());
 
@@ -156,15 +154,15 @@ public class AnaliseCreditoService {
 	 * @param clienteDTO
 	 * @return
 	 */
-	private AnaliseCredito calcularLimite(final ClienteDTO clienteDTO) {
+	private AnaliseCredito calcularLimite(final ClienteDTO clienteDTO, final double score) {
 		Double renda = clienteDTO.getRenda();
 
 		double porcentagemDeducao = (clienteDTO.getDependentes() * 5) / 100.0;
 
 		double rendaDedusida = renda - (renda * porcentagemDeducao);
 
-		double limiteMin = calcularLimiteMin(rendaDedusida);
-		double limiteMax = calcularLimiteMax(rendaDedusida);
+		double limiteMin = calcularLimiteMin(rendaDedusida, score);
+		double limiteMax = calcularLimiteMax(rendaDedusida, score);
 
 		AnaliseCredito analiseCredito = new AnaliseCredito();
 
@@ -176,23 +174,13 @@ public class AnaliseCreditoService {
 	}
 
 	/**
-	 * Valida se o Cliente possuí idade mínima para enviar proposta de crédito
+	 * Valida se o Cliente não ultrapassa a idade máxima ou possui idade mínima para enviar proposta de crédito
 	 * 
-	 * @param clienteDTO
+	 * @param idade
 	 * @return
 	 */
-	private boolean avaliarPorIdadeMinima(final ClienteDTO clienteDTO) {
-		return clienteDTO.getIdade() < pesoIdadeRepository.findIdadeMinima();
-	}
-
-	/**
-	 * Valida se o Cliente não ultrapassa a idade máxima para enviar proposta de crédito
-	 * 
-	 * @param clienteDTO
-	 * @return
-	 */
-	private boolean avaliarPorIdadeMaxima(final ClienteDTO clienteDTO) {
-		return clienteDTO.getIdade() > pesoIdadeRepository.findIdadeMaxima();
+	private boolean avaliarPropostaPorIdade(final Integer idade) {
+		return idade < pesoIdadeRepository.findIdadeMinima() || idade > pesoIdadeRepository.findIdadeMaxima();
 	}
 
 	/**
@@ -201,8 +189,9 @@ public class AnaliseCreditoService {
 	 * @param renda
 	 * @return
 	 */
-	private double calcularLimiteMin(final double renda) {
-		return renda * this.limiteMin;
+	private double calcularLimiteMin(final double renda, final double score) {
+		AnaliseRisco analiseRisco = analiseRiscoRepository.findByAnaliseRiscoByScore(score);
+		return renda * analiseRisco.getLimiteMin();
 	}
 
 	/**
@@ -210,8 +199,9 @@ public class AnaliseCreditoService {
 	 * @param renda
 	 * @return
 	 */
-	private double calcularLimiteMax(final double renda) {
-		return renda * this.limiteMax;
+	private double calcularLimiteMax(final double renda, final double score) {
+		AnaliseRisco analiseRisco = analiseRiscoRepository.findByAnaliseRiscoByScore(score);
+		return renda * analiseRisco.getLimiteMax();
 	}
 
 	/**
@@ -314,18 +304,10 @@ public class AnaliseCreditoService {
 	 * @param score
 	 * @return
 	 */
-	private AnaliseCredito negarPorAltoRisco(final ClienteDTO clienteDTO, final Double score) {
-		AnaliseCredito analiseCreditoNegada = new AnaliseCredito();
+	private AnaliseCredito negarPorAltoRisco(final Long idCliente, final Double score) {
+		AnaliseCredito propostaNegada = negarProposta(idCliente, "Reprovado pela política de crédito", score);
 
-		analiseCreditoNegada.setIdCliente(clienteDTO.getId());
-		analiseCreditoNegada.setMotivo("Reprovado pela política de crédito");
-		analiseCreditoNegada.setLimiteMax(0.0);
-		analiseCreditoNegada.setLimiteMin(0.0);
-		analiseCreditoNegada.setStatus(StatusAprovadoNegado.NEGADO);
-		analiseCreditoNegada.setDataAnalise(LocalDateTime.now());
-		analiseCreditoNegada.setScore(score);
-
-		return analiseCreditoRepository.save(analiseCreditoNegada);
+		return analiseCreditoRepository.save(propostaNegada);
 	}
 
 	/**
@@ -334,18 +316,41 @@ public class AnaliseCreditoService {
 	 * @param clienteDTO
 	 * @return
 	 */
-	private AnaliseCredito negarPorRendaBaixa(final ClienteDTO clienteDTO) {
+	private AnaliseCredito negarPorRendaBaixa(final Long idCliente) {
+		AnaliseCredito propostaNegada = negarProposta(idCliente, "Renda baixa", null);
+
+		return analiseCreditoRepository.save(propostaNegada);
+	}
+
+	/**
+	 * Nega a proposta de crédito definindo o idCliente, motivo e score
+	 * 
+	 * @param clienteDTO
+	 * @param motivo
+	 * @param score
+	 * @return
+	 */
+	private AnaliseCredito negarProposta(final Long idCliente, final String motivo, final Double score) {
+		if(StringUtils.isEmpty(motivo)) {
+			throw new RestResponseMessageException(RestMessageCode.ERRO_INTERNO_SERVIDOR);
+		}
+
 		AnaliseCredito analiseCreditoNegada = new AnaliseCredito();
 
-		analiseCreditoNegada.setIdCliente(clienteDTO.getId());
-		analiseCreditoNegada.setMotivo("Renda baixa");
+		analiseCreditoNegada.setIdCliente(idCliente);
+		analiseCreditoNegada.setMotivo(motivo);
 		analiseCreditoNegada.setLimiteMax(0.0);
 		analiseCreditoNegada.setLimiteMin(0.0);
 		analiseCreditoNegada.setStatus(StatusAprovadoNegado.NEGADO);
 		analiseCreditoNegada.setDataAnalise(LocalDateTime.now());
-		analiseCreditoNegada.setScore(0.0);
 
-		return analiseCreditoRepository.save(analiseCreditoNegada);
+		if(Objects.isNull(score)) {
+			analiseCreditoNegada.setScore(0.0);
+		} else {
+			analiseCreditoNegada.setScore(score);
+		}
+
+		return analiseCreditoNegada;
 	}
 
 	/**

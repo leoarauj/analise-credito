@@ -1,5 +1,6 @@
 package br.com.analise.credito.api.facade;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -41,15 +42,15 @@ public class ResultadoAnaliseFacade {
 		List<ClienteDTO> clientesDTO = clienteFacade.buscarTodos();
 
 		if(Objects.isNull(clientesDTO) || clientesDTO.isEmpty()) {
-			return null;
+			return Arrays.asList();
 		}
 
-		List<Long> idsCliente = clientesDTO.stream().map(o -> o.getId()).collect(Collectors.toList());
+		List<Long> idsCliente = clientesDTO.stream().map(ClienteDTO::getId).collect(Collectors.toList());
 
 		List<AnaliseCredito> collectAnalise = analiseCreditoRepository.findAnaliseCreditoByIdClienteAndMaxDateDataAnalise(idsCliente);
 
 		if(Objects.isNull(collectAnalise) || collectAnalise.isEmpty()) {
-			return null;
+			return Arrays.asList();
 		}
 
 		return collectAnalise.stream().map(o -> {
@@ -60,6 +61,7 @@ public class ResultadoAnaliseFacade {
 				if(dto.getId() == o.getIdCliente()) {
 					resultado.setClienteDTO(dto);
 					resultado.setAnaliseCreditoDTO(analiseCreditoDTO);
+					break;
 				}
 			}
 

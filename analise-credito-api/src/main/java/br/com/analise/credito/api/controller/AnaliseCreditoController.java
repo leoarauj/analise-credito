@@ -26,7 +26,7 @@ import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping(value = "${api.version}/analises")
-@Api(value = "Endpoints para gerenciar Análise de Crédito")
+@Api(value = "Endpoints de Análise de Crédito")
 public class AnaliseCreditoController {
 
 	@Autowired
@@ -59,7 +59,7 @@ public class AnaliseCreditoController {
 	 * 
 	 * @return
 	 */
-	@ApiOperation(value = "Busca todos Clientes")
+	@ApiOperation(value = "Busca todos os resultados vigentes de cada Análise de Crédito")
 	@ApiResponses({ 
 		@ApiResponse(code = 200, message = "Success", response = ResultadoAnaliseDTO.class),
 		@ApiResponse(code = 400, message = "Bad Request", response = RestResponse.class),
